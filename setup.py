@@ -1,7 +1,7 @@
 from distutils.core import setup
 
-setup(name='multip_map',
-      version='1.11.19',
-      packages=['multip_map'],
+setup(name='easy_multip',
+      version='1.15.19',
+      packages=['easy_multip'],
       license='TODO',
 )
