@@ -6,7 +6,7 @@ from multiprocessing import Process, Manager
 import tqdm
 
 
-def map(expensive_func, iterable, leave_one_cpu_free=False):
+def map(expensive_func, iterable, leave_one_cpu_free=False) -> list:
     '''
     Equivalent usage to the map() function for use with expensive
     functions operating on iterable.
@@ -40,9 +40,10 @@ def map(expensive_func, iterable, leave_one_cpu_free=False):
         for i, index_dict in enumerate(iterable_index_dicts):
             iterable_groups[i % (num_cpus)].append(index_dict)
 
-        processes = [Process(target=multiprocessing_worker,
+        processes = [Process(target=multiprocessing_worker_map,
                              args=(expensive_func, iterable_groups[i], result_dict))
                                 for i in range(num_cpus)]
+
         print(f'---easy_multip.map started---')
         print(f'Firing up {num_cpus} processes.')
         print(f'The below progress bar switches between individual processes.')
@@ -55,7 +56,42 @@ def map(expensive_func, iterable, leave_one_cpu_free=False):
         return [result_dict[i] for i in range(len(iterable))]
 
 
-def multiprocessing_worker(func, iterable_sublist, working_dict):
+def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=False) -> None:
+    '''
+    Equivalent to a for loop that runs a function that RETURNS NONE!!!
+    Useful for situations like file processing.
+
+    Runs these operations in parallel on the max number of processes for the job.
+
+    leave_one_cpu_free arg can be set as True to not use ALL the computer's resources.
+    '''
+    num_cpus = multiprocessing.cpu_count()
+    if leave_one_cpu_free and num_cpus > 1:
+        num_cpus -= 1
+
+    # next 3 lines most evenly spread out data args into groups for processes
+    # does NOT matter that they are not in order, as the "index" in each
+    # iterable_index_dict handles ordering of results at the end!
+    iterable_arg_groups = [[] for _ in range(num_cpus)]
+    for i, arg_tup in enumerate(iterable_of_arg_tuples):
+        iterable_arg_groups[i % (num_cpus)].append(arg_tup)
+
+    processes = [Process(target=multiprocessing_worker_doloop,
+                         args=(expensive_func, iterable_arg_groups[i]))
+                            for i in range(num_cpus)]
+
+    print(f'---easy_multip.doloop started---')
+    print(f'Firing up {num_cpus} processes.')
+    print(f'The below progress bar switches between individual processes.')
+
+    for proc in processes:
+        proc.start()
+    for proc in processes:
+        proc.join()
+    print('easy_multip.doloop() complete!')
+
+
+def multiprocessing_worker_map(func, iterable_sublist, working_dict):
     '''
     This worker function must be at the top-level of this module
     so that it can be pickled for multiprocessing.
@@ -63,3 +99,12 @@ def multiprocessing_worker(func, iterable_sublist, working_dict):
     for item_dict in tqdm.tqdm(iterable_sublist):
         for index, item in item_dict.items():  # there will only be one index:item pair
             working_dict[index] = func(item)
+
+
+def multiprocessing_worker_doloop(func, iterable_of_func_arg_tups) -> None:
+    '''
+    This worker function must be at the top-level of this module
+    so that it can be pickled for multiprocessing.
+    '''
+    for func_arg_tup in tqdm.tqdm(iterable_of_func_arg_tups):
+        func(*func_arg_tup)  # unpack tuple of args and pass into func

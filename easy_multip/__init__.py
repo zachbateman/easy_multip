@@ -1,1 +1,1 @@
-from .functions import map
+from .functions import map, doloop
