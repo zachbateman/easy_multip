@@ -25,9 +25,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=False) -> list:
 
     leave_one_cpu_free arg can be set as True to not use ALL the computer's resources.
     '''
-    num_cpus = multiprocessing.cpu_count()
-    if leave_one_cpu_free and num_cpus > 1:
-        num_cpus -= 1
+    num_cpus = _num_cpus(leave_one_cpu_free)
 
     iterable_index_dicts = [{index: item} for index, item in enumerate(iterable)]  # used for list order
     with Manager() as manager:
@@ -65,9 +63,7 @@ def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=False) -> 
 
     leave_one_cpu_free arg can be set as True to not use ALL the computer's resources.
     '''
-    num_cpus = multiprocessing.cpu_count()
-    if leave_one_cpu_free and num_cpus > 1:
-        num_cpus -= 1
+    num_cpus = _num_cpus(leave_one_cpu_free)
 
     # next 3 lines most evenly spread out data args into groups for processes
     # does NOT matter that they are not in order, as the "index" in each
@@ -108,3 +104,14 @@ def multiprocessing_worker_doloop(func, iterable_of_func_arg_tups) -> None:
     '''
     for func_arg_tup in tqdm.tqdm(iterable_of_func_arg_tups):
         func(*func_arg_tup)  # unpack tuple of args and pass into func
+
+
+def _num_cpus(leave_one_cpu_free: bool) -> int:
+    '''
+    Returns the number of cpus available for separate processes.
+    Will return total - 1 if leave_one_cpu_free == True
+    '''
+    num_cpus = multiprocessing.cpu_count()
+    if leave_one_cpu_free and num_cpus > 1:
+        num_cpus -= 1
+    return num_cpus
