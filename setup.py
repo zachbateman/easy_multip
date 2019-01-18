@@ -1,10 +1,16 @@
 from distutils.core import setup
 
+with open('README.md', 'r') as f:
+    long_description = f.read()
+
 setup(name='easy_multip',
       version='0.1',
       packages=['easy_multip'],
       license='MIT',
       author='Zach Bateman',
+      description='Easy Python multiprocessing',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       url='https://github.com/zachbateman/easy_multip.git',
       download_url='https://github.com/zachbateman/easy_multip/archive/v_0.1.tar.gz',
       keywords=['MULTIPROCESSING', 'SIMPLE', 'EASY', 'PARALLEL'],
