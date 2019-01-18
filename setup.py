@@ -1,7 +1,18 @@
 from distutils.core import setup
 
 setup(name='easy_multip',
-      version='1.15.19',
+      version='0.1',
       packages=['easy_multip'],
-      license='TODO',
+      license='MIT',
+      author='Zach Bateman'
+      url='https://github.com/zachbateman/easy_multip.git',
+      download_url='https://github.com/zachbateman/easy_multip/archive/v_01.tar.gz',
+      keywords=['MULTIPROCESSING', 'SIMPLE', 'EASY', 'PARALLEL'],
+      install_requires=['tqdm'],
+      classifiers=['Development Status :: 3 - Alpha',
+                   'License :: MIT License',
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.6',
+                   'Programming Language :: Python :: 3.7',
+                   ]
 )
