@@ -6,7 +6,7 @@ from multiprocessing import Process, Manager
 import tqdm
 
 
-def map(expensive_func, iterable, leave_one_cpu_free=False) -> list:
+def map(expensive_func, iterable, leave_one_cpu_free=False, verbose: bool=False) -> list:
     '''
     Equivalent usage to the map() function for use with expensive
     functions operating on iterable.
@@ -41,10 +41,10 @@ def map(expensive_func, iterable, leave_one_cpu_free=False) -> list:
         processes = [Process(target=multiprocessing_worker_map,
                              args=(expensive_func, iterable_groups[i], result_dict))
                                 for i in range(num_cpus)]
-
-        print(f'---easy_multip.map started---')
-        print(f'Firing up {num_cpus} processes.')
-        print(f'The below progress bar switches between individual processes.')
+        if verbose:
+            print(f'---easy_multip.map started---')
+            print(f'Firing up {num_cpus} processes.')
+            print(f'The below progress bar switches between individual processes.')
 
         for proc in processes:
             proc.start()
@@ -54,7 +54,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=False) -> list:
         return [result_dict[i] for i in range(len(iterable))]
 
 
-def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=False) -> None:
+def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=False, verbose: bool=False) -> None:
     '''
     Equivalent to a for loop that runs a function that RETURNS NONE!!!
     Useful for situations like file processing.
@@ -75,16 +75,15 @@ def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=False) -> 
     processes = [Process(target=multiprocessing_worker_doloop,
                          args=(expensive_func, iterable_arg_groups[i]))
                             for i in range(num_cpus)]
-
-    print(f'---easy_multip.doloop started---')
-    print(f'Firing up {num_cpus} processes.')
-    print(f'The below progress bar switches between individual processes.')
+    if verbose:
+        print(f'---easy_multip.doloop started---')
+        print(f'Firing up {num_cpus} processes.')
+        print(f'The below progress bar switches between individual processes.')
 
     for proc in processes:
         proc.start()
     for proc in processes:
         proc.join()
-    print('easy_multip.doloop() complete!')
 
 
 def multiprocessing_worker_map(func, iterable_sublist, working_dict):
