@@ -21,10 +21,10 @@ easy_multip is a small tool designed to quickly allow Python multiprocessing cap
         for arg in arg_group:
             func(arg)
         ```
-    - easy_multip.decorators.use_multip(func, leave_one_cpu_free=True)
-      -Decorator providing capability of quickly adding multiprocessing to a function operating on a list
-      -ONLY for functions taking a list first arg that returns a list or None
-      -DO NOT USE `@decorator` syntax!  Must use the following pattern:
+  - easy_multip.decorators.use_multip(func, leave_one_cpu_free=True)
+    -Decorator providing capability of quickly adding multiprocessing to a function operating on a list
+    -ONLY for functions taking a list first arg that returns a list or None
+    -DO NOT USE `@decorator` syntax!  Must use the following pattern:
         ```sh
         def _func(list_arg, *args, **kwargs):
             # stuff happens
