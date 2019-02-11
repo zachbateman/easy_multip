@@ -14,7 +14,7 @@ easy_multip is a small tool designed to quickly allow Python multiprocessing cap
         ```
   - easy_multip.doloop(func, arg_group, leave_one_cpu_free=True)
     - for loop equivalent that runs a function that returns None
-    - Useful in situations like file processing where each operation is expensive and totally independant
+    - Useful in situations like file processing where each operation is expensive and totally independent
     - Allocates jobs evenly among processors and provides a progress bar... of sorts
     - Usage is similar to the below construct:
         ```sh
@@ -22,9 +22,9 @@ easy_multip is a small tool designed to quickly allow Python multiprocessing cap
             func(arg)
         ```
   - easy_multip.decorators.use_multip(func, leave_one_cpu_free=True)
-    -Decorator providing capability of quickly adding multiprocessing to a function operating on a list
-    -ONLY for functions taking a list first arg that returns a list or None
-    -DO NOT USE `@decorator` syntax!  Must use the following pattern:
+    - Decorator providing capability of quickly adding multiprocessing to a function operating on a list
+    - ONLY for functions taking a list first arg that returns a list or None
+    - DO NOT USE `@decorator` syntax!  Must use the following pattern:
         ```sh
         def _func(list_arg, *args, **kwargs):
             # stuff happens
