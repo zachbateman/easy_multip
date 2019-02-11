@@ -6,7 +6,7 @@ from multiprocessing import Process, Manager
 import tqdm
 
 
-def map(expensive_func, iterable, leave_one_cpu_free=False, verbose: bool=False) -> list:
+def map(expensive_func, iterable, leave_one_cpu_free=True, verbose: bool=False) -> list:
     '''
     Equivalent usage to the map() function for use with expensive
     functions operating on iterable.
@@ -23,7 +23,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=False, verbose: bool=False)
           (Example, for 100 jobs on 8 processors has each processor running 12 or 13 jobs
           instead of 7 doing 12 jobs and one doing 16 jobs.)
 
-    leave_one_cpu_free arg can be set as True to not use ALL the computer's resources.
+    leave_one_cpu_free arg can be set as False to use ALL the computer's resources.
     '''
     num_cpus = _num_cpus(leave_one_cpu_free)
 
@@ -54,14 +54,14 @@ def map(expensive_func, iterable, leave_one_cpu_free=False, verbose: bool=False)
         return [result_dict[i] for i in range(len(iterable))]
 
 
-def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=False, verbose: bool=False) -> None:
+def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=True, verbose: bool=False) -> None:
     '''
     Equivalent to a for loop that runs a function that RETURNS NONE!!!
     Useful for situations like file processing.
 
     Runs these operations in parallel on the max number of processes for the job.
 
-    leave_one_cpu_free arg can be set as True to not use ALL the computer's resources.
+    leave_one_cpu_free arg can be set as False to use ALL the computer's resources.
     '''
     num_cpus = _num_cpus(leave_one_cpu_free)
 
