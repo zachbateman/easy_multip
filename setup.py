@@ -4,7 +4,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(name='easy_multip',
-      version='0.2.1',
+      version='0.2.2',
       packages=['easy_multip'],
       license='MIT',
       author='Zach Bateman',
@@ -12,7 +12,7 @@ setup(name='easy_multip',
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='https://github.com/zachbateman/easy_multip.git',
-      download_url='https://github.com/zachbateman/easy_multip/archive/v_0.2.1.tar.gz',
+      download_url='https://github.com/zachbateman/easy_multip/archive/v_0.2.2.tar.gz',
       keywords=['MULTIPROCESSING', 'SIMPLE', 'EASY', 'PARALLEL'],
       install_requires=['tqdm'],
       classifiers=['Development Status :: 3 - Alpha',

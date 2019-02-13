@@ -60,10 +60,10 @@ def use_multip(func, leave_one_cpu_free=True, verbose: bool=False):
     return inner
 
 
-def _use_multip_worker(func, sublist, cpu_index, working_dict, *args):
+def _use_multip_worker(func, sublist, cpu_index, working_dict, *args_kwargs):
     '''
     This worker function must be at the top-level of this module
     so that it can be pickled for multiprocessing.
     '''
-    args, kwargs = args  # both are coming in as *args
-    working_dict[cpu_index] = func(sublist, args[0], args[1], **kwargs)
+    args, kwargs = args_kwargs  # both are coming in as *args
+    working_dict[cpu_index] = func(sublist, *args, **kwargs)

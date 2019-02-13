@@ -8,7 +8,7 @@ first_arg = [i for i in range(5000)]
 # decorated with "use_multip" below definition (can't use @ sugar b/c pickle issues)
 def test_func(list_arg: list, arg2, arg3, add=True):
     '''
-    Function that takes first arg as list and returns a list or None.
+    Takes first arg as list and returns a list or None.
     '''
     results = []
     for x in list_arg:
