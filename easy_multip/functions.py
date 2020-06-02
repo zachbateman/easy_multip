@@ -6,7 +6,7 @@ from multiprocessing import Process, Manager
 import tqdm
 
 
-def map(expensive_func, iterable, leave_one_cpu_free=True, verbose: bool=False) -> list:
+def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verbose: bool=False) -> list:
     '''
     Equivalent usage to the map() function for use with expensive
     functions operating on iterable.
@@ -24,8 +24,10 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, verbose: bool=False) 
           instead of 7 doing 12 jobs and one doing 16 jobs.)
 
     leave_one_cpu_free arg can be set as False to use ALL the computer's resources.
+
+    Alternatively, num_cpus can be specified to use a specific number of cores.
     '''
-    num_cpus = _num_cpus(leave_one_cpu_free)
+    num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
 
     iterable_index_dicts = [{index: item} for index, item in enumerate(iterable)]  # used for list order
     with Manager() as manager:
@@ -54,7 +56,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, verbose: bool=False) 
         return [result_dict[i] for i in range(len(iterable))]
 
 
-def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=True, verbose: bool=False) -> None:
+def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=True, num_cpus: int=0, verbose: bool=False) -> None:
     '''
     Equivalent to a for loop that runs a function that RETURNS NONE!!!
     Useful for situations like file processing.
@@ -62,8 +64,10 @@ def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=True, verb
     Runs these operations in parallel on the max number of processes for the job.
 
     leave_one_cpu_free arg can be set as False to use ALL the computer's resources.
+
+    Alternatively, num_cpus can be specified to use a specific number of cores.
     '''
-    num_cpus = _num_cpus(leave_one_cpu_free)
+    num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
 
     # next 3 lines most evenly spread out data args into groups for processes
     # does NOT matter that they are not in order, as the "index" in each
