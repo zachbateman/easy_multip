@@ -10,7 +10,7 @@ def test_func(arg_tup):
     x, y, ref_data = arg_tup
     time.sleep(random.random() * 2)
     return x + y + ref_data[5]
-    
+
 def test_func2(arg_tup, shared_mem):
     x, y = arg_tup
     time.sleep(random.random() * 2)
@@ -27,9 +27,9 @@ if __name__ == '__main__':
     t0 = time.time()
     data2 = easy_multip.map(test_func, [(*arg, REF_DATA) for arg in args])
     print(f'easy_multip.doloop time: {round(time.time() - t0, 2)}')
-    
+
     t0 = time.time()
     data3 = easy_multip.map(test_func2, [(arg) for arg in args], shared_memory_iterable=REF_DATA)
     print(f'easy_multip.doloop time: {round(time.time() - t0, 2)}')
-    
+
     print(f'data1 == data2 == data3 check: {data1 == data2 == data3}')

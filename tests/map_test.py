@@ -20,5 +20,5 @@ if __name__ == '__main__':
     t0 = time.time()
     data2 = easy_multip.map(test_func, args)
     print(f'easy_multip.doloop time: {round(time.time() - t0, 2)}')
-    
+
     print(f'data1 == data2 check: {data1 == data2}')
