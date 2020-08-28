@@ -29,16 +29,16 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
     '''
     num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
 
-    iterable_index_dicts = [{index: item} for index, item in enumerate(iterable)]  # used for list order
     with Manager() as manager:
         result_dict = manager.dict()  # dict-ish thing handling dict-like data storage among processes
 
-        # next 3 lines most evenly spread out data args into groups for processes
+        # next lines most evenly spread out data args into groups for processes
         # does NOT matter that they are not in order, as the "index" in each
-        # iterable_index_dict handles ordering of results at the end!
+        # handles ordering of results at the end!
         iterable_groups = [[] for _ in range(num_cpus)]
-        for i, index_dict in enumerate(iterable_index_dicts):
-            iterable_groups[i % (num_cpus)].append(index_dict)
+        append_funcs = {i: iterable_groups[i].append for i in range(num_cpus)}
+        for index, item in enumerate(iterable):
+            append_funcs[i % num_cpus]({index: item})  # index used for list order
 
         processes = [Process(target=multiprocessing_worker_map,
                              args=(expensive_func, iterable_groups[i], result_dict))
@@ -56,7 +56,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
         return [result_dict[i] for i in range(len(iterable))]
 
 
-def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=True, num_cpus: int=0, verbose: bool=False) -> None:
+def doloop(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verbose: bool=False) -> None:
     '''
     Equivalent to a for loop that runs a function that RETURNS NONE!!!
     Useful for situations like file processing.
@@ -69,15 +69,14 @@ def doloop(expensive_func, iterable_of_arg_tuples, leave_one_cpu_free=True, num_
     '''
     num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
 
-    # next 3 lines most evenly spread out data args into groups for processes
-    # does NOT matter that they are not in order, as the "index" in each
-    # iterable_index_dict handles ordering of results at the end!
-    iterable_arg_groups = [[] for _ in range(num_cpus)]
-    for i, arg_tup in enumerate(iterable_of_arg_tuples):
-        iterable_arg_groups[i % (num_cpus)].append(arg_tup)
+    # next lines most evenly spread out data args into groups for processes
+    iterable_groups = [[] for _ in range(num_cpus)]
+    append_funcs = {i: iterable_groups[i].append for i in range(num_cpus)}
+    for i, arg_tup in enumerate(iterable):
+        append_funcs[i % num_cpus](arg_tup)
 
     processes = [Process(target=multiprocessing_worker_doloop,
-                         args=(expensive_func, iterable_arg_groups[i]))
+                         args=(expensive_func, iterable_groups[i]))
                             for i in range(num_cpus)]
     if verbose:
         print(f'---easy_multip.doloop started---')
