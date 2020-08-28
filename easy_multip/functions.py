@@ -38,7 +38,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
         iterable_groups = [[] for _ in range(num_cpus)]
         append_funcs = {i: iterable_groups[i].append for i in range(num_cpus)}
         for index, item in enumerate(iterable):
-            append_funcs[i % num_cpus]({index: item})  # index used for list order
+            append_funcs[index % num_cpus]({index: item})  # index used for list order
 
         processes = [Process(target=multiprocessing_worker_map,
                              args=(expensive_func, iterable_groups[i], result_dict))
