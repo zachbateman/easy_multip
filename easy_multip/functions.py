@@ -17,7 +17,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
 
     NOTE: This implementation appears FASTER than normal multiprocessing.Pool.map()!
           The reason is likely because the jobs are distributed as evenly as possible
-          among the proceses whereas in normal map, one process might get all of the
+          among the processes whereas in normal map, one process might get all of the
           remaining jobs if the job count is not cleanly divisible by processor count.
 
           (Example, for 100 jobs on 8 processors has each processor running 12 or 13 jobs
@@ -28,9 +28,12 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
     Alternatively, num_cpus can be specified to use a specific number of cores.
     '''
     num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
+    if num_cpus > multiprocessing.cpu_count():
+        num_cpus = multiprocessing.cpu_count()
+        print(f'Using {num_cpus} CPUs.')
 
     with Manager() as manager:
-        result_dict = manager.dict()  # dict-ish thing handling dict-like data storage among processes
+        result_dict = manager.dict()  # dict-ish thing handling data storage among processes
 
         # next lines most evenly spread out data args into groups for processes
         # does NOT matter that they are not in order, as the "index" in each
@@ -41,7 +44,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
             append_funcs[index % num_cpus]({index: item})  # index used for list order
 
         processes = [Process(target=multiprocessing_worker_map,
-                             args=(expensive_func, iterable_groups[i], result_dict))
+                             args=(expensive_func, iterable_groups[i], result_dict, i))
                                 for i in range(num_cpus)]
         if verbose:
             print(f'---easy_multip.map started---')
@@ -89,12 +92,12 @@ def doloop(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, v
         proc.join()
 
 
-def multiprocessing_worker_map(func, iterable_sublist, working_dict):
+def multiprocessing_worker_map(func, iterable_sublist, working_dict, process_num):
     '''
     This worker function must be at the top-level of this module
     so that it can be pickled for multiprocessing.
     '''
-    for item_dict in tqdm.tqdm(iterable_sublist):
+    for item_dict in tqdm.tqdm(iterable_sublist, position=process_num, desc=f'Process {process_num}'):
         for index, item in item_dict.items():  # there will only be one index:item pair
             working_dict[index] = func(item)
 
