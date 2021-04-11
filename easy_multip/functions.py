@@ -6,7 +6,7 @@ from multiprocessing import Process, Manager
 import tqdm
 
 
-def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verbose: bool=False) -> list:
+def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpu: int=0, verbose: bool=False) -> list:
     '''
     Equivalent usage to the map() function for use with expensive
     functions operating on iterable.
@@ -27,7 +27,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
 
     Alternatively, num_cpus can be specified to use a specific number of cores.
     '''
-    num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
+    num_cpus = _num_cpus(leave_one_cpu_free) if num_cpu == 0 else num_cpu
     if num_cpus > multiprocessing.cpu_count():
         num_cpus = multiprocessing.cpu_count()
         print(f'Using {num_cpus} CPUs.')
@@ -59,7 +59,7 @@ def map(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verb
         return [result_dict[i] for i in range(len(iterable))]
 
 
-def doloop(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, verbose: bool=False) -> None:
+def doloop(expensive_func, iterable, leave_one_cpu_free=True, num_cpu: int=0, verbose: bool=False) -> None:
     '''
     Equivalent to a for loop that runs a function that RETURNS NONE!!!
     Useful for situations like file processing.
@@ -70,7 +70,7 @@ def doloop(expensive_func, iterable, leave_one_cpu_free=True, num_cpus: int=0, v
 
     Alternatively, num_cpus can be specified to use a specific number of cores.
     '''
-    num_cpus = _num_cpus(leave_one_cpu_free) if num_cpus == 0 else num_cpus
+    num_cpus = _num_cpus(leave_one_cpu_free) if num_cpu == 0 else num_cpu
 
     # next lines most evenly spread out data args into groups for processes
     iterable_groups = [[] for _ in range(num_cpus)]
@@ -97,7 +97,7 @@ def multiprocessing_worker_map(func, iterable_sublist, working_dict, process_num
     This worker function must be at the top-level of this module
     so that it can be pickled for multiprocessing.
     '''
-    for item_dict in tqdm.tqdm(iterable_sublist, position=process_num, desc=f'Process {process_num}'):
+    for item_dict in tqdm.tqdm(iterable_sublist, position=process_num, desc=f'Process {process_num}', dynamic_ncols=True):
         for index, item in item_dict.items():  # there will only be one index:item pair
             working_dict[index] = func(item)
 

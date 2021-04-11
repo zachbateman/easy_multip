@@ -7,7 +7,7 @@ from functools import wraps
 import math
 
 
-def use_multip(func, leave_one_cpu_free=True, verbose: bool=False):
+def use_multip(func, num_cpu: int=0, leave_one_cpu_free=True, verbose: bool=False):
     '''
     Decorator providing capability to quickly use multiprocessing with
     an expensive function operating on a list.
@@ -37,7 +37,8 @@ def use_multip(func, leave_one_cpu_free=True, verbose: bool=False):
         else:
             raise TypeError(f'The first arg of {func.__name__} must be a list when using the @use_multip decorator.')
 
-        num_cpus = _num_cpus(leave_one_cpu_free)
+        num_cpus = _num_cpus(leave_one_cpu_free) if num_cpu == 0 else num_cpu
+
         chunk_size = math.ceil(len(first_arg) / num_cpus)  # round UP
         sublists = [first_arg[cpu_index * chunk_size:(cpu_index + 1) * chunk_size] for cpu_index in range(num_cpus)]
         with Manager() as manager:
