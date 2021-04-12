@@ -25,6 +25,7 @@ def use_multip(func, num_cpu: int=0, leave_one_cpu_free=True, verbose: bool=Fals
                                     func = use_multip(_func)
 
                                  after the _func definition (NOTE THE UNDERSCORE!!!).
+    ALSO, decorated function must accept a "cpu_index" kwarg (or **kwargs) as this gets provided.
     '''
     @wraps(func)  # allows for decorated function's docstring to come through decorator
     def inner(*args, **kwargs):
@@ -67,4 +68,5 @@ def _use_multip_worker(func, sublist, cpu_index, working_dict, *args_kwargs):
     so that it can be pickled for multiprocessing.
     '''
     args, kwargs = args_kwargs  # both are coming in as *args
+    kwargs['cpu_index'] = cpu_index
     working_dict[cpu_index] = func(sublist, *args, **kwargs)
