@@ -1,6 +1,6 @@
 # easy_multip
 
-easy_multip is a small tool designed to quickly allow Python multiprocessing capabilities while greatly simplifying code for easier use.
+easy_multip is a small tool designed to simplify Python multiprocessing capabilities.
 
 # Current Features
 

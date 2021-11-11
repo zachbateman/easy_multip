@@ -71,6 +71,8 @@ def doloop(expensive_func, iterable, leave_one_cpu_free=True, num_cpu: int=0, ve
     Alternatively, num_cpus can be specified to use a specific number of cores.
     '''
     num_cpus = _num_cpus(leave_one_cpu_free) if num_cpu == 0 else num_cpu
+    if num_cpus > len(iterable):  # don't need or want more processes than length of the iterable
+        num_cpus = len(iterable)
 
     # next lines most evenly spread out data args into groups for processes
     iterable_groups = [[] for _ in range(num_cpus)]
